@@ -138,11 +138,11 @@ class ImageEditor extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevState.text !== this.state.text) {
-            this.setState({
-                text: this.state.text
-            });
-        }
+        // if (prevState.text !== this.state.text) {
+        //     this.setState({
+        //         text: this.state.text
+        //     });
+        // }
     }
 
     clear() {
