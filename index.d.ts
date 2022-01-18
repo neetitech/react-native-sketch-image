@@ -103,8 +103,8 @@ export interface ImageEditorProps {
      */
     permissionDialogMessage?: string;
 
-    onStrokeStart?: () => void;
-    onStrokeChanged?: () => void;
+    onStrokeStart?: (x: number, y: number) => void;
+    onStrokeChanged?: (x: number, y: number) => void;
     onStrokeEnd?: (path: Path) => void;
     onSketchSaved?: (result: boolean, path: string) => void;
     onPathsChange?: (pathsCount: number) => void;
