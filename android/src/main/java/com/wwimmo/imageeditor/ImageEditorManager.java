@@ -44,6 +44,7 @@ public class ImageEditorManager extends SimpleViewManager<ImageEditor> {
     public static final int COMMAND_DECREASE_SHAPE_FONTSIZE = 11;
     public static final int COMMAND_CHANGE_SHAPE_TEXT = 12;
     public static final int COMMAND_UNSELECT_SHAPE = 13;
+    public static final int COMMAND_MOVE_SELECTED_SHAPE = 14;
 
     public static ImageEditor Canvas = null;
 
@@ -102,6 +103,7 @@ public class ImageEditorManager extends SimpleViewManager<ImageEditor> {
         map.put("decreaseShapeFontsize", COMMAND_DECREASE_SHAPE_FONTSIZE);
         map.put("changeShapeText", COMMAND_CHANGE_SHAPE_TEXT);
         map.put("unselectShape", COMMAND_UNSELECT_SHAPE);
+        map.put("moveSelectedShape", COMMAND_MOVE_SELECTED_SHAPE);
 
         return map;
     }
@@ -204,6 +206,12 @@ public class ImageEditorManager extends SimpleViewManager<ImageEditor> {
             case COMMAND_UNSELECT_SHAPE: {
                 view.unselectShape();
                 return;
+            }
+            case COMMAND_MOVE_SELECTED_SHAPE: {
+                String valueX = args.getInt(0);
+                String valueY = args.getInt(0);
+                const value = {x: valueX, y: valueY}
+                view.moveSelectedShape(value);
             }
             default:
                 throw new IllegalArgumentException(String.format(

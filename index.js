@@ -180,6 +180,10 @@ export default class RNImageEditor extends React.Component {
         this._sketchCanvas.addShape(config);
     }
 
+    moveSelectedShape(value) {
+        this._sketchCanvas.moveSelectedShape(value);
+    }
+
     increaseSelectedShapeFontsize() {
         this._sketchCanvas.increaseSelectedShapeFontsize();
     }

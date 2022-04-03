@@ -901,4 +901,14 @@
     }
 }
 
+- (void)moveSelectedShape: (NSDictionary *)actionObject {
+    if(self.selectedEntity) {
+        CGFloat newValueX = [[actionObject valueForKeyPath:@"value.x"] floatValue];
+        CGFloat newValueY = [[actionObject valueForKeyPath:@"value.y"] floatValue];
+        CGPoint newPoint = CGPointMake(newValueX, newValueY);
+        [self.selectedEntity moveEntityTo: newPoint];
+        [self setNeedsDisplayInRect:self.selectedEntity.bounds];
+    }
+}
+
 @end
