@@ -165,13 +165,6 @@ RCT_EXPORT_METHOD(decreaseShapeFontsize:(nonnull NSNumber *)reactTag)
     }];
 }
 
-RCT_EXPORT_METHOD(moveSelectedShape:(nonnull NSNumber *)reactTag actionObject:(NSDictionary *) actionObject)
-{
-    [self runCanvas:reactTag block:^(RNSketchCanvas *canvas) {
-        [canvas moveSelectedShape: actionObject];
-    }];
-}
-
 RCT_EXPORT_METHOD(changeShapeText:(nonnull NSNumber *)reactTag newText:(NSString *) newText)
 {
     [self runCanvas:reactTag block:^(RNImageEditor *canvas) {
