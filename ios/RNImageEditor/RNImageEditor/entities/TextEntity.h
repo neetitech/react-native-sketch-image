@@ -32,7 +32,8 @@
                      borderStrokeWidth: (CGFloat)borderStrokeWidth
                      borderStrokeColor: (UIColor *)borderStrokeColor
                      entityStrokeWidth: (CGFloat)entityStrokeWidth
-                     entityStrokeColor: (UIColor *)entityStrokeColor;
+                     entityStrokeColor: (UIColor *)entityStrokeColor
+                              isFilled:(Boolean)isFilled;
 
 - (void)updateText: (NSString *)newText;
 - (void)updateFontSize: (CGFloat)newFontSize;

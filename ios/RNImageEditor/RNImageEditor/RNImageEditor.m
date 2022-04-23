@@ -51,6 +51,7 @@
         self.entityBorderStrokeWidth = 1.0;
         self.entityStrokeWidth = 5.0;
         self.entityStrokeColor = [UIColor blackColor];
+        self.isFilled = false;
         
         self.tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
         self.tapGesture.delegate = self;
@@ -641,7 +642,8 @@
                             borderStrokeWidth:self.entityBorderStrokeWidth
                             borderStrokeColor:self.entityBorderColor
                             entityStrokeWidth:self.entityStrokeWidth
-                            entityStrokeColor:self.entityStrokeColor];
+                            entityStrokeColor:self.entityStrokeColor
+                            isFilled:self.isFilled];
     
     [self.motionEntities addObject:entity];
     [self onShapeSelectionChanged:entity];
@@ -665,7 +667,8 @@
                           borderStrokeWidth:self.entityBorderStrokeWidth
                           borderStrokeColor:self.entityBorderColor
                           entityStrokeWidth:self.entityStrokeWidth
-                          entityStrokeColor:self.entityStrokeColor];
+                          entityStrokeColor:self.entityStrokeColor
+                          isFilled:self.isFilled];
     
     [self.motionEntities addObject:entity];
     [self onShapeSelectionChanged:entity];
@@ -689,7 +692,8 @@
                               borderStrokeWidth:self.entityBorderStrokeWidth
                               borderStrokeColor:self.entityBorderColor
                               entityStrokeWidth:self.entityStrokeWidth
-                              entityStrokeColor:self.entityStrokeColor];
+                              entityStrokeColor:self.entityStrokeColor
+                              isFilled:self.isFilled];
     
     [self.motionEntities addObject:entity];
     [self onShapeSelectionChanged:entity];
@@ -713,7 +717,8 @@
                               borderStrokeWidth:self.entityBorderStrokeWidth
                               borderStrokeColor:self.entityBorderColor
                               entityStrokeWidth:self.entityStrokeWidth
-                              entityStrokeColor:self.entityStrokeColor];
+                              entityStrokeColor:self.entityStrokeColor
+                              isFilled:self.isFilled];
     
     [self.motionEntities addObject:entity];
     [self onShapeSelectionChanged:entity];
@@ -738,7 +743,8 @@
                            borderStrokeWidth:self.entityBorderStrokeWidth
                            borderStrokeColor:self.entityBorderColor
                            entityStrokeWidth:self.entityStrokeWidth
-                           entityStrokeColor:self.entityStrokeColor];
+                           entityStrokeColor:self.entityStrokeColor
+                          isFilled:self.isFilled];
     
     [self.motionEntities addObject:entity];
     [self onShapeSelectionChanged:entity];

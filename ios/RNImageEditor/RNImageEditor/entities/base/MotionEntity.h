@@ -30,6 +30,7 @@
 @property (nonatomic) UIColor* borderStrokeColor;
 @property (nonatomic) CGFloat entityStrokeWidth;
 @property (nonatomic) UIColor* entityStrokeColor;
+@property (nonatomic) Boolean isFilled;
 
 
 - (instancetype)initAndSetupWithParent: (NSInteger)parentWidth
@@ -44,7 +45,8 @@
                      borderStrokeWidth: (CGFloat)borderStrokeWidth
                      borderStrokeColor: (UIColor *)borderStrokeColor
                      entityStrokeWidth: (CGFloat)entityStrokeWidth
-                     entityStrokeColor: (UIColor *)entityStrokeColor;
+                     entityStrokeColor: (UIColor *)entityStrokeColor
+                              isFilled: (Boolean)isFilled;
 
 - (BOOL)isEntitySelected;
 - (BOOL)isPointInEntity:(CGPoint)point;
