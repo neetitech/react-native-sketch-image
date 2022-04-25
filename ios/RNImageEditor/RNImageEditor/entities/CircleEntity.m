@@ -66,7 +66,7 @@
     
     if (self.isFilled) {
         CGContextSetFillColorWithColor(contextRef, [self.entityStrokeColor CGColor]);
-        CGContextFillRects(contextRef, &circleRect, 1);
+        CGContextFillEllipseInRect(contextRef, circleRect);
     }
 }
 
