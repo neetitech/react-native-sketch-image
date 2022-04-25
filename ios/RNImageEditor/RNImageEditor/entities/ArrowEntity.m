@@ -26,7 +26,7 @@
                      borderStrokeColor: (UIColor *)borderStrokeColor
                      entityStrokeWidth: (CGFloat)entityStrokeWidth
                      entityStrokeColor: (UIColor *)entityStrokeColor
-                              isFilled:(Boolean)isFilled {
+                              isFilled:(BOOL)isFilled {
     
     CGFloat realParentCenterX = parentCenterX - width / 4;
     CGFloat realParentCenterY = parentCenterY - height / 4;

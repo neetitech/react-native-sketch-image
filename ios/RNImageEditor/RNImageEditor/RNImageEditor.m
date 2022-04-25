@@ -51,7 +51,7 @@
         self.entityBorderStrokeWidth = 1.0;
         self.entityStrokeWidth = 5.0;
         self.entityStrokeColor = [UIColor blackColor];
-        self.isFilled = false;
+        self.isFilled = YES;
         
         self.tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
         self.tapGesture.delegate = self;
