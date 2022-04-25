@@ -49,8 +49,10 @@
                               isFilled: (BOOL)isFilled;
 
 - (BOOL)isEntitySelected;
+- (BOOL)isEntityFilled;
 - (BOOL)isPointInEntity:(CGPoint)point;
 - (void)setIsSelected:(BOOL)isSelected;
+- (void)setIsFilled:(BOOL)isFilled;
 - (void)rotateEntityBy:(CGFloat)rotationInRadians;
 - (void)moveEntityTo:(CGPoint)locationDiff;
 - (void)scaleEntityBy:(CGFloat)newScale;

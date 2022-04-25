@@ -51,7 +51,7 @@
         self.entityBorderStrokeWidth = 1.0;
         self.entityStrokeWidth = 5.0;
         self.entityStrokeColor = [UIColor blackColor];
-        self.isFilled = YES;
+        self.isFilled = NO;
         
         self.tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
         self.tapGesture.delegate = self;
@@ -749,6 +749,13 @@
     [self.motionEntities addObject:entity];
     [self onShapeSelectionChanged:entity];
     [self selectEntity:entity];
+}
+
+- (void)fillShape {
+    if (self.selectedEntity) {
+        [self.selectedEntity setIsFilled:![self.selectedEntity isEntityFilled]];
+        [self.selectedEntity setNeedsDisplay];
+    }
 }
 
 - (void)selectEntity:(MotionEntity *)entity {
