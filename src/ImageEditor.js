@@ -203,6 +203,14 @@ class ImageEditor extends React.Component {
         }
     }
 
+    fillShape() {
+        UIManager.dispatchViewManagerCommand(
+            this._handle,
+            UIManager.getViewManagerConfig(RNImageEditor).Commands.fillShape,
+            []
+        );
+    }
+
     moveSelectedShape(value) {
         if (value) {
             UIManager.dispatchViewManagerCommand(

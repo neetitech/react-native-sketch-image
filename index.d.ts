@@ -242,6 +242,7 @@ export default class RNImageEditor extends React.Component<RNImageEditorProps & 
     addPath(data: Path): void;
     deletePath(id: number): void;
     addShape(config: AddShapeConfig): void;
+    fillShape(): void;
     deleteSelectedShape(): void;
     unselectShape(): void;
     increaseSelectedShapeFontsize(): void;

@@ -53,12 +53,20 @@
     return self.isSelected;
 }
 
+- (BOOL)isEntityFilled {
+    return self.isFilled;
+}
+
 - (BOOL)isPointInEntity:(CGPoint)point {
     return CGRectContainsPoint(self.frame, point);
 }
 
 - (void)setIsSelected:(BOOL)isSelected {
     _isSelected = isSelected;
+}
+
+- (void)setIsFilled:(BOOL)isFilled {
+    _isFilled = isFilled;
 }
 
 - (void)rotateEntityBy:(CGFloat)rotationInRadians {

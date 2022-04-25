@@ -745,6 +745,13 @@
     [self selectEntity:entity];
 }
 
+- (void)fillShape {
+    if (self.selectedEntity) {
+        [self.selectedEntity setIsFilled:![self.selectedEntity isEntityFilled]];
+        [self.selectedEntity setNeedsDisplay];
+    }
+}
+
 - (void)selectEntity:(MotionEntity *)entity {
     if (self.selectedEntity) {
         [self.selectedEntity setIsSelected:NO];

@@ -63,6 +63,11 @@
     circleRect = CGRectInset(circleRect, padding , padding);
     
     CGContextStrokeEllipseInRect(contextRef, circleRect);
+    
+    if (self.isFilled) {
+        CGContextSetFillColorWithColor(contextRef, [self.entityStrokeColor CGColor]);
+        CGContextFillRects(contextRef, &circleRect, 1);
+    }
 }
 
 @end

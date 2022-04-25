@@ -63,6 +63,11 @@
     entityRect = CGRectInset(entityRect, padding , padding);
     
     CGContextStrokeRect(contextRef, entityRect);
+    
+    if (self.isFilled) {
+        CGContextSetFillColorWithColor(contextRef, [self.entityStrokeColor CGColor]);
+        CGContextFillRects(contextRef, &entityRect, 1);
+    }
 }
 
 @end

@@ -73,6 +73,11 @@
     CGContextClosePath(contextRef);
     
     CGContextStrokePath(contextRef);
+    
+    if (self.isFilled) {
+        CGContextSetFillColorWithColor(contextRef, [self.entityStrokeColor CGColor]);
+        CGContextFillRects(contextRef, &entityRect, 1);
+    }
 }
 
 @end
