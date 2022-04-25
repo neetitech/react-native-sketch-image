@@ -72,11 +72,14 @@
     CGContextAddLineToPoint(contextRef, maxX / 2.0, minY);
     CGContextClosePath(contextRef);
     
-    CGContextStrokePath(contextRef);
-    
+    // CGContextFillPath and CGContextStrokePath can not be called one ofter the other
+    // as the path is removed from context after stroking or filling it. So in order to
+    // stroke + fill, either re-add the path to context OR use CGContextDrawPath
     if (self.isFilled) {
         CGContextSetFillColorWithColor(contextRef, [self.entityStrokeColor CGColor]);
-        CGContextFillRects(contextRef, &entityRect, 1);
+        CGContextDrawPath(contextRef, kCGPathFillStroke);
+    } else {
+        CGContextStrokePath(contextRef);
     }
 }
 
