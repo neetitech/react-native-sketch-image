@@ -24,8 +24,7 @@
                      borderStrokeWidth: (CGFloat)borderStrokeWidth
                      borderStrokeColor: (UIColor *)borderStrokeColor
                      entityStrokeWidth: (CGFloat)entityStrokeWidth
-                     entityStrokeColor: (UIColor *)entityStrokeColor
-                              isFilled:(BOOL)isFilled {
+                     entityStrokeColor: (UIColor *)entityStrokeColor {
     
     self = [super initWithFrame:CGRectMake(parentCenterX, parentCenterY, width, height)];
     
@@ -44,7 +43,6 @@
         self.borderStrokeColor = borderStrokeColor;
         self.entityStrokeWidth = entityStrokeWidth;
         self.entityStrokeColor = entityStrokeColor;
-        self.isFilled = isFilled;
         
         self.backgroundColor = [UIColor clearColor];
     }

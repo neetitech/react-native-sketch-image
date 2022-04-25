@@ -26,8 +26,7 @@
                      borderStrokeWidth: (CGFloat)borderStrokeWidth
                      borderStrokeColor: (UIColor *)borderStrokeColor
                      entityStrokeWidth: (CGFloat)entityStrokeWidth
-                     entityStrokeColor: (UIColor *)entityStrokeColor
-                              isFilled:(BOOL)isFilled {
+                     entityStrokeColor: (UIColor *)entityStrokeColor {
     
     // Let's calculate the initial texts single line width here
     NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -62,8 +61,7 @@
                        borderStrokeWidth:borderStrokeWidth
                        borderStrokeColor:borderStrokeColor
                        entityStrokeWidth:entityStrokeWidth
-                       entityStrokeColor:entityStrokeColor
-                                isFilled:isFilled];
+                       entityStrokeColor:entityStrokeColor];
     
     if (self) {
         self.MIN_SCALE = 0.3f;

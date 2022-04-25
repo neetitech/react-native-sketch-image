@@ -22,7 +22,6 @@
                      borderStrokeWidth: (CGFloat)borderStrokeWidth
                      borderStrokeColor: (UIColor *)borderStrokeColor
                      entityStrokeWidth: (CGFloat)entityStrokeWidth
-                     entityStrokeColor: (UIColor *)entityStrokeColor
-                            isFilled:(BOOL)isFilled;
+                     entityStrokeColor: (UIColor *)entityStrokeColor;
 
 @end

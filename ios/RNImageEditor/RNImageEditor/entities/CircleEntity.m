@@ -26,8 +26,7 @@
                      borderStrokeWidth: (CGFloat)borderStrokeWidth
                      borderStrokeColor: (UIColor *)borderStrokeColor
                      entityStrokeWidth: (CGFloat)entityStrokeWidth
-                     entityStrokeColor: (UIColor *)entityStrokeColor
-                              isFilled:(BOOL)isFilled {
+                     entityStrokeColor: (UIColor *)entityStrokeColor {
     
     CGFloat realParentCenterX = parentCenterX - width / 4;
     CGFloat realParentCenterY = parentCenterY - height / 4;
@@ -46,8 +45,7 @@
                        borderStrokeWidth:borderStrokeWidth
                        borderStrokeColor:borderStrokeColor
                        entityStrokeWidth:entityStrokeWidth
-                       entityStrokeColor:entityStrokeColor
-                                isFilled:isFilled];
+                       entityStrokeColor:entityStrokeColor];
     
     if (self) {
         self.MIN_SCALE = 0.3f;

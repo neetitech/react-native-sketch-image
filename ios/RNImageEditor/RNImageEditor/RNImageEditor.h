@@ -14,7 +14,6 @@
 @property (nonatomic) CGFloat entityBorderStrokeWidth;
 @property (nonatomic) CGFloat entityStrokeWidth;
 @property (nonatomic) UIColor *entityStrokeColor;
-@property (nonatomic) BOOL isFilled;
 @property (nonatomic) UITapGestureRecognizer *tapGesture;
 @property (nonatomic) UIRotationGestureRecognizer *rotateGesture;
 @property (nonatomic) UIPanGestureRecognizer *moveGesture;
