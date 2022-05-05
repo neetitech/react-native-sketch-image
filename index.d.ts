@@ -72,11 +72,6 @@ export interface AddShapeConfig {
     imageShapeAsset?: string;
 }
 
-export interface MoveShapeConfig {
-    x?: number;
-    y?: number;
-}
-
 export interface ImageEditorProps {
     style?: StyleProp<ViewStyle>;
     strokeColor?: string;
@@ -118,6 +113,7 @@ export interface ImageEditorProps {
 
 export class ImageEditor extends React.Component<ImageEditorProps & ViewProperties> {
     clear(): void;
+    updateLayer(isUp:boolean): void;
     undo(): number;
     addPath(data: Path): void;
     deletePath(id: number): void;
@@ -127,7 +123,6 @@ export class ImageEditor extends React.Component<ImageEditorProps & ViewProperti
     increaseSelectedShapeFontsize(): void;
     decreaseSelectedShapeFontsize(): void;
     changeSelectedShapeText(newText: String): void;
-    moveSelectedShape(value: MoveShapeConfig): void;
 
     /**
      * @param imageType "png" or "jpg"
@@ -242,7 +237,6 @@ export default class RNImageEditor extends React.Component<RNImageEditorProps & 
     addPath(data: Path): void;
     deletePath(id: number): void;
     addShape(config: AddShapeConfig): void;
-    fillShape(): void;
     deleteSelectedShape(): void;
     unselectShape(): void;
     increaseSelectedShapeFontsize(): void;
@@ -250,7 +244,6 @@ export default class RNImageEditor extends React.Component<RNImageEditorProps & 
     changeSelectedShapeText(newText: String): void;
     save(): void;
     nextStrokeWidth(): void;
-    moveSelectedShape(value: MoveShapeConfig): void;
 
     static MAIN_BUNDLE: string;
     static DOCUMENT: string;
