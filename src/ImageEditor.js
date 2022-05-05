@@ -145,6 +145,14 @@ class ImageEditor extends React.Component {
         // }
     }
 
+    updateLayer(isUp){
+        UIManager.dispatchViewManagerCommand(
+            this._handle,
+            UIManager.getViewManagerConfig(RNImageEditor).Commands.layerUpdate,
+            [isUp]
+        );
+    }
+
     clear() {
         this._paths = [];
         this._path = null;
@@ -200,24 +208,6 @@ class ImageEditor extends React.Component {
                 UIManager.getViewManagerConfig(RNImageEditor).Commands.addShape,
                 [config.shapeType, config.textShapeFontType, fontSize, config.textShapeText, config.imageShapeAsset]
             );
-        }
-    }
-
-    fillShape() {
-        UIManager.dispatchViewManagerCommand(
-            this._handle,
-            UIManager.getViewManagerConfig(RNImageEditor).Commands.fillShape,
-            []
-        );
-    }
-
-    moveSelectedShape(value) {
-        if (value) {
-            UIManager.dispatchViewManagerCommand(
-                this._handle, 
-                UIManager.getViewManagerConfig(RNImageEditor).Commands.moveSelectedShape, [
-                value.x, value.y
-            ]);
         }
     }
 
