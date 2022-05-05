@@ -172,8 +172,6 @@ export default class RNImageEditor extends React.Component {
         this._sketchCanvas.deletePath(id);
     }
 
-    
-
     deleteSelectedShape() {
         this._sketchCanvas.deleteSelectedShape();
     }
@@ -184,6 +182,14 @@ export default class RNImageEditor extends React.Component {
 
     addShape(config) {
         this._sketchCanvas.addShape(config);
+    }
+
+    fillShape() {
+        this._sketchCanvas.fillShape();
+    }
+
+    moveSelectedShape(value) {
+        this._sketchCanvas.moveSelectedShape(value);
     }
 
     increaseSelectedShapeFontsize() {

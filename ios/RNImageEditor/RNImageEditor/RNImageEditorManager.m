@@ -158,6 +158,13 @@ RCT_EXPORT_METHOD(addShape:(nonnull NSNumber *)reactTag shapeType:(NSString *) s
     }];
 }
 
+RCT_EXPORT_METHOD(fillShape:(nonnull NSNumber *)reactTag)
+{
+    [self runCanvas:reactTag block:^(RNImageEditor *canvas) {
+        [canvas fillShape];
+    }];
+}
+
 RCT_EXPORT_METHOD(increaseShapeFontsize:(nonnull NSNumber *)reactTag)
 {
     [self runCanvas:reactTag block:^(RNImageEditor *canvas) {
