@@ -13,18 +13,14 @@
 #import "entities/TriangleEntity.h"
 #import "entities/ArrowEntity.h"
 #import "entities/TextEntity.h"
+#import "entities/PathEntity.h"
 
 @implementation RNImageEditor
 {
     RCTEventDispatcher *_eventDispatcher;
-    NSMutableArray *_paths;
-    RNImageEditorData *_currentPath;
-
+    PathEntity *_pathEntity;
+    NSUInteger pathDrawingIndex;
     CGSize _lastSize;
-
-    CGContextRef _drawingContext, _translucentDrawingContext;
-    CGImageRef _frozenImage, _translucentFrozenImage;
-    BOOL _needsFullRedraw;
 
     UIImage *_backgroundImage;
     UIImage *_backgroundImageScaled;
@@ -38,13 +34,12 @@
     self = [super init];
     if (self) {
         _eventDispatcher = eventDispatcher;
-        _paths = [NSMutableArray new];
-        _needsFullRedraw = YES;
+        self.motionEntities = [NSMutableArray new];
+        //[self addPathLayer];
 
         self.backgroundColor = [UIColor clearColor];
         self.clearsContextBeforeDrawing = YES;
         
-        self.motionEntities = [NSMutableArray new];
         self.selectedEntity = nil;
         self.entityBorderColor = [UIColor clearColor];
         self.entityBorderStyle = DASHED;
@@ -76,13 +71,6 @@
     return self;
 }
 
-- (void)dealloc {
-    CGContextRelease(_drawingContext);
-    _drawingContext = nil;
-    CGImageRelease(_frozenImage);
-    _frozenImage = nil;
-}
-
 
 // Make multiple GestureRecognizers work
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
@@ -90,27 +78,9 @@
 }
 
 - (void)drawRect:(CGRect)rect {
-    CGContextRef context = UIGraphicsGetCurrentContext();
 
     CGRect bounds = self.bounds;
-
-    if (_needsFullRedraw) {
-        [self setFrozenImageNeedsUpdate];
-        CGContextClearRect(_drawingContext, bounds);
-        for (RNImageEditorData *path in _paths) {
-            [path drawInContext:_drawingContext];
-        }
-        _needsFullRedraw = NO;
-    }
-
-    if (!_frozenImage) {
-        _frozenImage = CGBitmapContextCreateImage(_drawingContext);
-    }
-    
-    if (!_translucentFrozenImage && _currentPath.isTranslucent) {
-        _translucentFrozenImage = CGBitmapContextCreateImage(_translucentDrawingContext);
-    }
-
+    [_pathEntity drawRect:rect];
     if (_backgroundImage) {
         if (!_backgroundImageScaled) {
             _backgroundImageScaled = [self scaleImage:_backgroundImage toSize:bounds.size contentMode: _backgroundImageContentMode];
@@ -123,19 +93,17 @@
         [text.text drawInRect: text.drawRect withAttributes: text.attribute];
     }
     
-    if (_frozenImage) {
-        CGContextDrawImage(context, bounds, _frozenImage);
-    }
-
-    if (_translucentFrozenImage && _currentPath.isTranslucent) {
-        CGContextDrawImage(context, bounds, _translucentFrozenImage);
-    }
-    
     for (BackgroundText *text in _arrTextOnSketch) {
         [text.text drawInRect: text.drawRect withAttributes: text.attribute];
     }
     
+    int counter = 0;
+    BOOL isPathDrawingAdded = false;
     for (MotionEntity *entity in self.motionEntities) {
+        if(counter == 0){
+            NSLog(@"inside motion loop:: %lu", (unsigned long)pathDrawingIndex);
+            [_pathEntity removeFromSuperview];
+        }
         [entity updateStrokeSettings:self.entityBorderStyle
                    borderStrokeWidth:self.entityBorderStrokeWidth
                    borderStrokeColor:self.entityBorderColor
@@ -145,20 +113,27 @@
         if ([entity isSelected]) {
             [entity setNeedsDisplay];
         }
-        
+        if(pathDrawingIndex == counter){
+            isPathDrawingAdded = true;
+            NSLog(@"inside motion loop add subview");
+            [self addSubview:_pathEntity];
+        }
         [self addSubview:entity];
+        counter++;
+    }
+    
+    if(isPathDrawingAdded == false && self.motionEntities.count>0){
+        [self addSubview:_pathEntity];
     }
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-
+    
     if (!CGSizeEqualToSize(self.bounds.size, _lastSize)) {
+
         _lastSize = self.bounds.size;
-        CGContextRelease(_drawingContext);
-        _drawingContext = nil;
-        [self createDrawingContext];
-        _needsFullRedraw = YES;
+        [self addPathLayer];
         _backgroundImageScaled = nil;
         
         for (BackgroundText *text in [_arrTextOnSketch arrayByAddingObjectsFromArray: _arrSketchOnText]) {
@@ -174,27 +149,6 @@
         
         [self setNeedsDisplay];
     }
-}
-
-- (void)createDrawingContext {
-    CGFloat scale = self.window.screen.scale;
-    CGSize size = self.bounds.size;
-    size.width *= scale;
-    size.height *= scale;
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    _drawingContext = CGBitmapContextCreate(nil, size.width, size.height, 8, 0, colorSpace, kCGImageAlphaPremultipliedLast);
-    _translucentDrawingContext = CGBitmapContextCreate(nil, size.width, size.height, 8, 0, colorSpace, kCGImageAlphaPremultipliedLast);
-    CGColorSpaceRelease(colorSpace);
-
-    CGContextConcatCTM(_drawingContext, CGAffineTransformMakeScale(scale, scale));
-    CGContextConcatCTM(_translucentDrawingContext, CGAffineTransformMakeScale(scale, scale));
-}
-
-- (void)setFrozenImageNeedsUpdate {
-    CGImageRelease(_frozenImage);
-    CGImageRelease(_translucentFrozenImage);
-    _frozenImage = nil;
-    _translucentFrozenImage = nil;
 }
 
 - (BOOL)openSketchFile:(NSString *)filename directory:(NSString*) directory contentMode:(NSString*)mode {
@@ -284,92 +238,85 @@
     [self setNeedsDisplay];
 }
 
+-(void) addPathLayer{
+    CGFloat scale = self.window.screen.scale;
+    CGSize size = self.bounds.size;
+    size.width *= scale;
+    size.height *= scale;
+    pathDrawingIndex = 0;
+    
+    PathEntity *entity = [[PathEntity alloc]
+                          initAndSetupWithParent:self.bounds.size.width
+                          parentHeight:self.bounds.size.height
+                          width:size.width
+                          height:size.height
+                          entityStrokeWidth:self.entityStrokeWidth
+                          entityStrokeColor:self.entityStrokeColor];
+    
+    [self addSubview:entity];
+    self->_pathEntity = entity;
+    _pathEntity._needsFullRedraw = YES;
+    _pathEntity.delegate = self;
+}
+
 - (void)newPath:(int) pathId strokeColor:(UIColor*) strokeColor strokeWidth:(int) strokeWidth {
+    NSLog(@"new Path");
+    
+    [_pathEntity newPath:pathId strokeColor:strokeColor strokeWidth:strokeWidth];
+    
     if (CGColorGetComponents(strokeColor.CGColor)[3] != 0.0) {
         self.entityStrokeColor = strokeColor;
     }
     self.entityStrokeWidth = strokeWidth;
-    
-    _currentPath = [[RNImageEditorData alloc]
-                    initWithId: pathId
-                    strokeColor: strokeColor
-                    strokeWidth: strokeWidth];
-    [_paths addObject: _currentPath];
 }
 
 - (void) addPath:(int) pathId strokeColor:(UIColor*) strokeColor strokeWidth:(int) strokeWidth points:(NSArray*) points {
+    NSLog(@"add Path");
     if (CGColorGetComponents(strokeColor.CGColor)[3] != 0.0) {
         self.entityStrokeColor = strokeColor;
     }
-    
-    bool exist = false;
-    for(int i=0; i<_paths.count; i++) {
-        if (((RNImageEditorData*)_paths[i]).pathId == pathId) {
-            exist = true;
-            break;
-        }
-    }
-    
-    if (!exist) {
-        RNImageEditorData *data = [[RNImageEditorData alloc] initWithId: pathId
-                                                  strokeColor: strokeColor
-                                                  strokeWidth: strokeWidth
-                                                       points: points];
-        [_paths addObject: data];
-        [data drawInContext:_drawingContext];
-        [self setFrozenImageNeedsUpdate];
-        [self setNeedsDisplay];
-    }
+    [_pathEntity addPath:pathId strokeColor:strokeColor strokeWidth:strokeWidth points:points];
 }
 
 - (void)deletePath:(int) pathId {
-    int index = -1;
-    for(int i=0; i<_paths.count; i++) {
-        if (((RNImageEditorData*)_paths[i]).pathId == pathId) {
-            index = i;
-            break;
-        }
-    }
-    
-    if (index > -1) {
-        [_paths removeObjectAtIndex: index];
-        _needsFullRedraw = YES;
-        [self setNeedsDisplay];
-        [self notifyPathsUpdate];
-    }
+    [_pathEntity deletePath:pathId];
 }
 
 - (void)addPointX: (float)x Y: (float)y isMove:(BOOL)isMove {
+    NSLog(@"Add Point");
     if (!self.selectedEntity && (![self findEntityAtPointX:x andY:y] || isMove)) {
-        CGPoint newPoint = CGPointMake(x, y);
-        CGRect updateRect = [_currentPath addPoint: newPoint];
-        
-        if (_currentPath.isTranslucent) {
-            CGContextClearRect(_translucentDrawingContext, self.bounds);
-            [_currentPath drawInContext:_translucentDrawingContext];
-        } else {
-            [_currentPath drawLastPointInContext:_drawingContext];
+        if (self->_pathEntity) {
+            [_pathEntity addPointX:x Y:y];
         }
-        
-        [self setFrozenImageNeedsUpdate];
-        [self setNeedsDisplayInRect:updateRect];
     }
 }
 
 - (void)endPath {
-    if (_currentPath.isTranslucent) {
-        [_currentPath drawInContext:_drawingContext];
+    NSLog(@"end Path");
+    if (self->_pathEntity) {
+        [_pathEntity endPath];
     }
-    _currentPath = nil;
-    [self notifyPathsUpdate];
 }
 
 - (void) clear {
-    [_paths removeAllObjects];
-    _currentPath = nil;
-    _needsFullRedraw = YES;
+    if (self->_pathEntity) {
+        [_pathEntity clear];
+    }
     [self setNeedsDisplay];
-    [self notifyPathsUpdate];
+}
+
+- (void) layerUpdate: (BOOL) isUp {
+    if(self.selectedEntity){
+        NSUInteger currentIndex = [self.subviews indexOfObject:self.selectedEntity];
+        NSUInteger updateIndex =  isUp? currentIndex + 1 : currentIndex - 1;
+        [self exchangeSubviewAtIndex:currentIndex withSubviewAtIndex:updateIndex];
+        if(updateIndex > self.motionEntities.count && currentIndex > self.motionEntities.count){
+            [self.motionEntities exchangeObjectAtIndex:currentIndex withObjectAtIndex:updateIndex];
+        }
+        pathDrawingIndex = [self.subviews indexOfObject:_pathEntity];
+        
+    }
+    
 }
 
 - (UIImage*)createImageWithTransparentBackground: (BOOL) transparent includeImage:(BOOL)includeImage includeText:(BOOL)includeText cropToImageSize:(BOOL)cropToImageSize {
@@ -393,8 +340,8 @@
             }
         }
         
-        CGContextDrawImage(context, targetRect, _frozenImage);
-        CGContextDrawImage(context, targetRect, _translucentFrozenImage);
+        CGContextDrawImage(context, targetRect, _pathEntity.frozenImage);
+        CGContextDrawImage(context, targetRect, _pathEntity.translucentFrozenImage);
         
         if (includeText) {
             for (BackgroundText *text in _arrTextOnSketch) {
@@ -446,8 +393,8 @@
             }
         }
         
-        CGContextDrawImage(context, rect, _frozenImage);
-        CGContextDrawImage(context, rect, _translucentFrozenImage);
+        CGContextDrawImage(context, rect, _pathEntity.frozenImage);
+        CGContextDrawImage(context, rect, _pathEntity.translucentFrozenImage);
         
         if (includeText) {
             for (BackgroundText *text in _arrTextOnSketch) {
@@ -745,13 +692,6 @@
     [self selectEntity:entity];
 }
 
-- (void)fillShape {
-    if (self.selectedEntity) {
-        [self.selectedEntity setIsFilled:![self.selectedEntity isEntityFilled]];
-        [self.selectedEntity setNeedsDisplay];
-    }
-}
-
 - (void)selectEntity:(MotionEntity *)entity {
     if (self.selectedEntity) {
         [self.selectedEntity setIsSelected:NO];
@@ -760,7 +700,7 @@
     if (entity) {
         [entity setIsSelected:YES];
         [entity setNeedsDisplay];
-        [self setFrozenImageNeedsUpdate];
+        [_pathEntity setFrozenImageNeedsUpdate];
         [self setNeedsDisplayInRect:entity.bounds];
     } else {
         [self setNeedsDisplay];
@@ -887,9 +827,9 @@
     }
 }
 
-- (void)notifyPathsUpdate {
+- (void)notifyPathsUpdate:(int) count{
     if (_onChange) {
-        _onChange(@{ @"pathsUpdate": @(_paths.count) });
+        _onChange(@{ @"pathsUpdate": @(count) });
     }
 }
 
@@ -905,16 +845,6 @@
             // Add delay!
             _onChange(@{ @"isShapeSelected": @NO });
         }
-    }
-}
-
-- (void)moveSelectedShape: (NSDictionary *)actionObject {
-    if(self.selectedEntity) {
-        CGFloat newValueX = [[actionObject valueForKeyPath:@"value.x"] floatValue];
-        CGFloat newValueY = [[actionObject valueForKeyPath:@"value.y"] floatValue];
-        CGPoint newPoint = CGPointMake(newValueX, newValueY);
-        [self.selectedEntity moveEntityTo: newPoint];
-        [self setNeedsDisplayInRect:self.selectedEntity.bounds];
     }
 }
 
