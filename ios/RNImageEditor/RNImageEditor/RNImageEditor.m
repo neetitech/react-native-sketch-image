@@ -101,7 +101,7 @@
     BOOL isPathDrawingAdded = false;
     for (MotionEntity *entity in self.motionEntities) {
         if(counter == 0){
-            NSLog(@"inside motion loop:: %lu", (unsigned long)pathDrawingIndex);
+            NSLog(@"inside motion loop:: %lu", (unsigned long)self.motionEntities.count);
             [_pathEntity removeFromSuperview];
         }
         [entity updateStrokeSettings:self.entityBorderStyle
@@ -121,6 +121,7 @@
         [self addSubview:entity];
         counter++;
     }
+    
     
     if(isPathDrawingAdded == false && self.motionEntities.count>0){
         [self addSubview:_pathEntity];
@@ -239,6 +240,9 @@
 }
 
 -(void) addPathLayer{
+    if(self->_pathEntity){
+        return;
+    }
     CGFloat scale = self.window.screen.scale;
     CGSize size = self.bounds.size;
     size.width *= scale;
@@ -310,13 +314,37 @@
         NSUInteger currentIndex = [self.subviews indexOfObject:self.selectedEntity];
         NSUInteger updateIndex =  isUp? currentIndex + 1 : currentIndex - 1;
         [self exchangeSubviewAtIndex:currentIndex withSubviewAtIndex:updateIndex];
-        if(updateIndex > self.motionEntities.count && currentIndex > self.motionEntities.count){
+        
+        if(updateIndex < self.motionEntities.count && currentIndex < self.motionEntities.count){
             [self.motionEntities exchangeObjectAtIndex:currentIndex withObjectAtIndex:updateIndex];
         }
         pathDrawingIndex = [self.subviews indexOfObject:_pathEntity];
         
     }
     
+}
+
+-(void) drawPathDrawingInContext:(CGContextRef)context withScaleFactor:(CGFloat)scaleFactor{
+    CGContextSaveGState(context);
+    
+    // Scale shapes because we cropToImageSize
+    if(scaleFactor!=-1.0f){
+        CGContextScaleCTM(context, scaleFactor, scaleFactor);
+    }
+    
+    // Center the context around the view's anchor point
+    CGContextTranslateCTM(context, [_pathEntity center].x, [_pathEntity center].y);
+    
+    // Apply the view's transform about the anchor point
+    CGContextConcatCTM(context, [_pathEntity transform]);
+    
+    // Offset by the portion of the bounds left of and above the anchor point
+    CGContextTranslateCTM(context, -[_pathEntity bounds].size.width * [[_pathEntity layer] anchorPoint].x, -[_pathEntity bounds].size.height * [[_pathEntity layer] anchorPoint].y);
+    
+    // Render the entity
+    [_pathEntity.layer renderInContext:context];
+    
+    CGContextRestoreGState(context);
 }
 
 - (UIImage*)createImageWithTransparentBackground: (BOOL) transparent includeImage:(BOOL)includeImage includeText:(BOOL)includeText cropToImageSize:(BOOL)cropToImageSize {
@@ -349,7 +377,15 @@
             }
         }
         
+        int counter = 0;
+        BOOL isPathDrawingAdded = false;
         for (MotionEntity *entity in self.motionEntities) {
+            
+            if(counter == pathDrawingIndex){
+                [self drawPathDrawingInContext:context withScaleFactor:scaleFactor];
+                isPathDrawingAdded = true;
+            }
+            
             CGContextSaveGState(context);
             
             // Scale shapes because we cropToImageSize
@@ -368,6 +404,11 @@
             [entity.layer renderInContext:context];
             
             CGContextRestoreGState(context);
+            counter++;
+        }
+        
+        if(isPathDrawingAdded == false){
+            [self drawPathDrawingInContext:context withScaleFactor:scaleFactor];
         }
         
         UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
@@ -401,8 +442,13 @@
                 [text.text drawInRect: text.drawRect withAttributes: text.attribute];
             }
         }
-        
+        int counter = 0;
+        BOOL isPathDrawingAdded = false;
         for (MotionEntity *entity in self.motionEntities) {
+            if(counter == pathDrawingIndex){
+                [self drawPathDrawingInContext:context withScaleFactor:-1.0f];
+                isPathDrawingAdded = true;
+            }
             CGContextSaveGState(context);
             
             // Center the context around the view's anchor point
@@ -418,6 +464,9 @@
             [entity.layer renderInContext:context];
             
             CGContextRestoreGState(context);
+        }
+        if(isPathDrawingAdded == false){
+            [self drawPathDrawingInContext:context withScaleFactor:-1.0f];
         }
         
         UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
@@ -692,13 +741,6 @@
     [self selectEntity:entity];
 }
 
-- (void)fillShape {
-    if (self.selectedEntity) {
-        [self.selectedEntity setIsFilled:![self.selectedEntity isEntityFilled]];
-        [self.selectedEntity setNeedsDisplay];
-    }
-}
-
 - (void)selectEntity:(MotionEntity *)entity {
     if (self.selectedEntity) {
         [self.selectedEntity setIsSelected:NO];
@@ -852,16 +894,6 @@
             // Add delay!
             _onChange(@{ @"isShapeSelected": @NO });
         }
-    }
-}
-
-- (void)moveSelectedShape: (NSDictionary *)actionObject {
-    if(self.selectedEntity) {
-        CGFloat newValueX = [[actionObject valueForKeyPath:@"value.x"] floatValue];
-        CGFloat newValueY = [[actionObject valueForKeyPath:@"value.y"] floatValue];
-        CGPoint newPoint = CGPointMake(newValueX, newValueY);
-        [self.selectedEntity moveEntityTo: newPoint];
-        [self setNeedsDisplayInRect:self.selectedEntity.bounds];
     }
 }
 
