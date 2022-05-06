@@ -118,10 +118,12 @@ export interface ImageEditorProps {
 
 export class ImageEditor extends React.Component<ImageEditorProps & ViewProperties> {
     clear(): void;
+    updateLayer(isUp:boolean): void;
     undo(): number;
     addPath(data: Path): void;
     deletePath(id: number): void;
     addShape(config: AddShapeConfig): void;
+    fillShape(): void;
     deleteSelectedShape(): void;
     unselectShape(): void;
     increaseSelectedShapeFontsize(): void;
@@ -239,6 +241,7 @@ export interface RNImageEditorProps {
 export default class RNImageEditor extends React.Component<RNImageEditorProps & ViewProperties> {
     clear(): void;
     undo(): number;
+    updateLayer(isUp:boolean): void;
     addPath(data: Path): void;
     deletePath(id: number): void;
     addShape(config: AddShapeConfig): void;

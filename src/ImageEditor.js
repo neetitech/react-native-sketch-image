@@ -145,6 +145,14 @@ class ImageEditor extends React.Component {
         // }
     }
 
+    updateLayer(isUp){
+        UIManager.dispatchViewManagerCommand(
+            this._handle,
+            UIManager.getViewManagerConfig(RNImageEditor).Commands.layerUpdate,
+            [isUp]
+        );
+    }
+
     clear() {
         this._paths = [];
         this._path = null;

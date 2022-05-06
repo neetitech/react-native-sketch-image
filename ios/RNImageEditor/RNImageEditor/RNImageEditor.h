@@ -1,10 +1,11 @@
 #import <UIKit/UIKit.h>
 #import "entities/base/Enumerations.h"
 #import "entities/base/MotionEntity.h"
+#import "entities/PathEntity.h"
 
 @class RCTEventDispatcher;
 
-@interface RNImageEditor : UIView <UIGestureRecognizerDelegate>
+@interface RNImageEditor : UIView <UIGestureRecognizerDelegate, PathUpdateDelegate>
 
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 @property (nonatomic) NSMutableArray<MotionEntity *> *motionEntities;
@@ -29,6 +30,7 @@
 - (void)addPointX: (float)x Y: (float)y isMove: (BOOL)isMove;
 - (void)endPath;
 - (void)clear;
+- (void) layerUpdate: (BOOL) isUp;
 - (void)saveImageOfType:(NSString*) type folder:(NSString*) folder filename:(NSString*) filename withTransparentBackground:(BOOL) transparent includeImage:(BOOL)includeImage includeText:(BOOL)includeText cropToImageSize:(BOOL)cropToImageSize;
 - (NSString*) transferToBase64OfType: (NSString*) type withTransparentBackground: (BOOL) transparent includeImage:(BOOL)includeImage includeText:(BOOL)includeText cropToImageSize:(BOOL)cropToImageSize;
 - (void)setShapeConfiguration:(NSDictionary *)dict;
