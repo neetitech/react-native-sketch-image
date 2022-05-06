@@ -741,6 +741,13 @@
     [self selectEntity:entity];
 }
 
+- (void)fillShape {
+    if (self.selectedEntity) {
+        [self.selectedEntity setIsFilled:![self.selectedEntity isEntityFilled]];
+        [self.selectedEntity setNeedsDisplay];
+    }
+}
+
 - (void)selectEntity:(MotionEntity *)entity {
     if (self.selectedEntity) {
         [self.selectedEntity setIsSelected:NO];
@@ -844,6 +851,16 @@
             [self setNeedsDisplayInRect:self.selectedEntity.bounds];
         }
         [sender setRotation:0.0];
+    }
+}
+
+- (void)moveSelectedShape: (NSDictionary *)actionObject {
+    if(self.selectedEntity) {
+        CGFloat newValueX = [[actionObject valueForKeyPath:@"value.x"] floatValue];
+        CGFloat newValueY = [[actionObject valueForKeyPath:@"value.y"] floatValue];
+        CGPoint newPoint = CGPointMake(newValueX, newValueY);
+        [self.selectedEntity moveEntityTo: newPoint];
+        [self setNeedsDisplayInRect:self.selectedEntity.bounds];
     }
 }
 
